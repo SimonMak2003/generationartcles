@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <title>Федералист | Генератор кода</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Serif:ital,wght@0,400;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lora', Georgia, serif;
+            background: #eceff1;
+            padding: 20px;
+            color: #222;
+        }
+
+        .wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            background: white;
+            padding: 28px;
+            border-radius: 8px;
+            box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 10px 18px;
+            cursor: pointer;
+            border: none;
+            background: #ddd;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .tab-btn.active {
+            background: #006aa7;
+            color: white;
+        }
+
+        .input-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 80px;
+        }
+
+        .btn-add {
+            background: #4caf50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background: #006aa7;
+            color: white;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            width: 100%;
+        }
+
+        #output {
+            width: 100%;
+            min-height: 200px;
+            margin-top: 12px;
+            background: #f9f9f9;
+            font-family: monospace;
+            font-size: 13px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .delete-btn {
+            background: #ff5252;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .dialog-item {
+            border-left: 4px solid #006aa7;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f1f8ff;
+        }
+
+        .small {
+            width: 48%;
+            display: inline-block;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .muted {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .quote-block {
+            background: #fffbe8;
+            border-left: 4px solid #f1c40f;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <h2>Генератор контента «Федералист»</h2>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-article">Статья</button>
+            <button class="tab-btn" id="tab-interview">Интервью</button>
+        </div>
+
+        <!-- Article fields -->
+        <div id="article-fields">
+            <div class="input-group"><label>Инфо (Дата | Категория)</label><input id="art_info"
+                    placeholder="6 июня | Политика"></div>
+            <div class="input-group"><label>Название</label><input id="art_title" placeholder="Заголовок статьи"></div>
+            <div class="input-group"><label>Логлайн</label><input id="art_logline"
+                    placeholder="Короткий логлайн (показывается сразу под заголовком)"></div>
+            <div class="input-group"><label>Первый абзац</label><textarea id="art_first"></textarea></div>
+
+            <div class="input-group">
+                <label>Основной контент (можно добавлять фрагменты текста и цитаты)</label>
+                <div id="article-content"></div>
+                <div class="controls">
+                    <button class="btn-add" onclick="addTextBlock()">+ Текст</button>
+                    <button class="btn-add" onclick="addQuoteBlock()">+ Цитата</button>
+                </div>
+            </div>
+
+            <div class="input-group"><label>Ссылка на картинку статьи (панорама/баннер)</label><input id="art_img"
+                    placeholder="https://..."></div>
+            <div class="input-group"><label>Автор (BB-код)</label><input id="art_author"
+                    placeholder="[USER=8]Имя[/USER]"></div>
+            <div class="input-group"><label>Ссылка на фото автора</label><input id="art_author_img"
+                    placeholder="https://..."></div>
+        </div>
+
+        <!-- Interview fields -->
+        <div id="interview-fields" style="display:none;">
+            <div class="input-group"><label>Заголовок интервью</label><input id="int_title"
+                    placeholder="Заголовок интервью"></div>
+            <div class="input-group"><label>Логлайн интервью</label><input id="int_logline"
+                    placeholder="Короткий логлайн для интервью"></div>
+            <div class="input-group"><label>Фотопанорама (ссылка)</label><input id="int_panorama"
+                    placeholder="https://..."></div>
+
+            <div id="dialog-container"></div>
+            <div class="controls" style="margin-top:10px;">
+                <button class="btn-add" onclick="addDialog('question')">+ Вопрос (слева)</button>
+                <button class="btn-add" onclick="addDialog('answer')">+ Ответ (справа)</button>
+            </div>
+        </div>
+
+        <hr style="margin:18px 0;">
+
+        <div style="display:flex; gap:8px;">
+            <button class="btn-primary" id="generate-btn">Сгенерировать код</button>
+            <button class="btn-primary" id="copy-btn" style="width:160px; background:#2d9cdb;">Скопировать код</button>
+        </div>
+
+        <label style="margin-top:14px; display:block;">Результат (Скопируйте в сообщение на форуме):</label>
+        <textarea id="output" readonly></textarea>
+    </div>
+
+    <script>
+        // Переключение вкладок
+        const tabArticle = document.getElementById('tab-article');
+        const tabInterview = document.getElementById('tab-interview');
+        const articleFields = document.getElementById('article-fields');
+        const interviewFields = document.getElementById('interview-fields');
+
+        tabArticle.addEventListener('click', () => { tabArticle.classList.add('active'); tabInterview.classList.remove('active'); articleFields.style.display = 'block'; interviewFields.style.display = 'none'; });
+        tabInterview.addEventListener('click', () => { tabInterview.classList.add('active'); tabArticle.classList.remove('active'); articleFields.style.display = 'none'; interviewFields.style.display = 'block'; });
+
+        // Контейнеры
+        const articleContent = document.getElementById('article-content');
+        // Инициализация с одним текстовым блоком
+        addTextBlock();
+
+        function addTextBlock(text = '') {
+            const id = 'txt-' + Date.now() + Math.random().toString(36).slice(2, 8);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'content-block';
+            wrapper.dataset.type = 'text';
+            wrapper.style.marginBottom = '10px';
+            wrapper.innerHTML = `
+        <textarea data-id="${id}" class="block-text" placeholder="Продолжение текста...">${text}</textarea>
+        <div style="margin-top:6px; display:flex; gap:6px;">
+          <button class="delete-btn" onclick="this.closest('.content-block').remove()">Удалить блок</button>
+        </div>
+      `;
+            articleContent.appendChild(wrapper);
+            wrapper.querySelector('textarea').focus();
+        }
+
+        function addQuoteBlock(quoteText = '', attribution = '') {
+            const id = 'q-' + Date.now() + Math.random().toString(36).slice(2, 8);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'content-block';
+            wrapper.dataset.type = 'quote';
+            wrapper.style.marginBottom = '10px';
+            wrapper.innerHTML = `
+        <div style="margin-bottom:8px; font-weight:700;">Цитата</div>
+        <textarea data-id="${id}" class="quote-textarea" placeholder="Текст цитаты...">${quoteText}</textarea>
+        <input type="text" class="quote-attr" placeholder="Атрибуция (пример: [USER=332]Имя Фамилия[/USER])" value="${attribution}" style="margin-top:8px;">
+        <div style="margin-top:8px; display:flex; gap:6px;">
+          <button class="delete-btn" onclick="this.closest('.content-block').remove()">Удалить цитату</button>
+          <button class="btn-add" onclick="insertTextAfter(this.closest('.content-block'))">Вставить текст после цитаты</button>
+        </div>
+      `;
+            articleContent.appendChild(wrapper);
+            wrapper.querySelector('.quote-textarea').focus();
+        }
+
+        function insertTextAfter(node) {
+            // создаёт новый текстовый блок сразу после переданного узла
+            const textBlock = document.createElement('div');
+            textBlock.className = 'content-block';
+            textBlock.dataset.type = 'text';
+            textBlock.style.marginBottom = '10px';
+            textBlock.innerHTML = `
+        <textarea class="block-text" placeholder="Продолжение текста..."></textarea>
+        <div style="margin-top:6px; display:flex; gap:6px;">
+          <button class="delete-btn" onclick="this.closest('.content-block').remove()">Удалить блок</button>
+        </div>
+      `;
+            node.parentNode.insertBefore(textBlock, node.nextSibling);
+            textBlock.querySelector('textarea').focus();
+        }
+
+        // Диалоги для интервью
+        function addDialog(type) {
+            const container = document.getElementById('dialog-container');
+            const div = document.createElement('div');
+            div.className = 'dialog-item';
+            div.dataset.type = type;
+            div.innerHTML = `
+        <div class="row" style="align-items:flex-start;">
+          <input type="text" placeholder="Кто говорит (Имя)" class="diag-name" style="width:28%;">
+          <textarea placeholder="Текст реплики" class="diag-text" style="width:68%"></textarea>
+        </div>
+        <div style="margin-top:8px;">
+          <button class="delete-btn" onclick="this.closest('.dialog-item').remove()">Удалить</button>
+        </div>
+      `;
+            container.appendChild(div);
+            div.querySelector('.diag-name').focus();
+        }
+
+        // Генерация кода
+        document.getElementById('generate-btn').addEventListener('click', generate);
+        document.getElementById('copy-btn').addEventListener('click', copyOutput);
+
+        function generate() {
+            const note = `[PARSEHTML]<div class="ArticleNote">Вы можете поддержать издание «Федералист», поставив реакцию к статье, присоединившись к её обсуждению или отправив донат игровой валюты (или золота) автору статьи.</div>[/PARSEHTML]`;
+
+            if (articleFields.style.display !== 'none') {
+                const info = document.getElementById('art_info').value.trim();
+                const title = document.getElementById('art_title').value.trim();
+                const logline = document.getElementById('art_logline').value.trim();
+                const first = document.getElementById('art_first').value.trim();
+                const img = document.getElementById('art_img').value.trim();
+                const author = document.getElementById('art_author').value.trim();
+                const authorImg = document.getElementById('art_author_img').value.trim();
+
+                let out = '';
+
+                // Заголовок
+                out += `[PARSEHTML]<div class="ArticleHeader">[/PARSEHTML]${info}\n\n${title}[PARSEHTML]</div>[/PARSEHTML]\n\n`;
+
+                // Логлайн
+                if (logline) {
+                    out += `[PARSEHTML]<div class="ArticleLogline">[/PARSEHTML]${logline}[PARSEHTML]</div>[/PARSEHTML]\n\n`;
+                }
+
+                // Картинка
+                if (img) {
+                    out += `[PARSEHTML]<div style="text-align: center; padding: 20px 0 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 300px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>[/PARSEHTML]\n\n`;
+                }
+
+                // Начало блока текста (Lora)
+                out += `[PARSEHTML]<div class="ArticleText">[/PARSEHTML]`;
+
+                if (first) {
+                    out += `${first}\n\n`;
+                }
+
+                // Проходим по всем блокам контента
+                const blocks = articleContent.querySelectorAll('.content-block');
+                blocks.forEach(block => {
+                    if (block.dataset.type === 'text') {
+                        const t = block.querySelector('textarea').value.trim();
+                        if (t) out += `${t}\n\n`;
+                    } else if (block.dataset.type === 'quote') {
+                        const q = block.querySelector('.quote-textarea').value.trim();
+                        const attr = block.querySelector('.quote-attr').value.trim();
+                        if (q) {
+                            // Цитата должна быть внутри PARSEHTML, но мы не закрываем ArticleText
+                            out += `[PARSEHTML]<div class="quote-container"><div class="quote-text">${escapeHtml(q)}</div><div class="quote-attribution">${attr}</div></div>[/PARSEHTML]\n\n`;
+                        }
+                    }
+                });
+
+                // ВАЖНО: Закрываем ArticleText только ЗДЕСЬ, в самом конце основного контента
+                out += `[PARSEHTML]</div>[/PARSEHTML]\n\n`;
+
+                // Автор
+                out += `[PARSEHTML]<div class="AuthorColumn" style="background-color: #f5f5f5; --color: #006aa7">
+<div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}">
+<p class="AuthorName">[/PARSEHTML]${author}[PARSEHTML]</p></div>
+<p class="AuthorDesc">Автор статьи</p></div></div>[/PARSEHTML]\n\n`;
+
+                out += note;
+                document.getElementById('output').value = out;
+                return;
+            }
+
+            // Логика интервью (остается без изменений, так как там была верная структура)
+            const intTitle = document.getElementById('int_title').value.trim();
+            const intLogline = document.getElementById('int_logline').value.trim();
+            const intPan = document.getElementById('int_panorama').value.trim();
+
+            let out = `[PARSEHTML]<div class="ArticleHeader">[/PARSEHTML]ИНТЕРВЬЮ | ${intTitle}\n\n`;
+            if (intLogline) out += `[PARSEHTML]<div class="ArticleLogline">[/PARSEHTML]${intLogline}[PARSEHTML]</div>[/PARSEHTML]\n\n`;
+            if (intPan) out += `[PARSEHTML]<div style="text-align:center; padding:10px 0;"><img src="${intPan}" style="width:100%; object-fit:cover; max-height:300px;"></div>[/PARSEHTML]\n\n`;
+
+            const dialogItems = document.querySelectorAll('#dialog-container .dialog-item');
+            dialogItems.forEach(item => {
+                const type = item.dataset.type;
+                const name = item.querySelector('.diag-name').value.trim();
+                const text = item.querySelector('.diag-text').value.trim();
+                if (text) {
+                    const className = type === 'question' ? 'yp_interview_question' : 'yp_interview_answer';
+                    const labelClass = type === 'question' ? 'yp_interviewer' : 'yp_interviewee';
+                    out += `[PARSEHTML]<div class="${className}"><span class="${labelClass}">${escapeHtml(name)}:</span>[/PARSEHTML] ${escapeHtml(text)} [PARSEHTML]</div>[/PARSEHTML]\n\n`;
+                }
+            });
+            out += note;
+            document.getElementById('output').value = out;
+        }
+        <div class="quote-container">
+            <div class="quote-text">${escapeHtml(q)}</div>
+            <div class="quote-attribution">${attr || ''}</div>
+        </div>
+        [/PARSEHTML]\n\n`;
+            }
+          }
+        });
+
+        // закрываем ArticleText
+        out += `[PARSEHTML]</div > [/PARSEHTML]\n\n`;
+
+        // Авторский блок
+        out += `[PARSEHTML] < div class="AuthorColumn" style = "background-color: #f5f5f5; --color: #006aa7" >
+            <div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}">
+                <p class="AuthorName">[/PARSEHTML]${author}[PARSEHTML]</p></div>
+                <p class="AuthorDesc">Автор статьи</p></div></div > [/PARSEHTML]\n\n`;
+
+        out += note;
+        document.getElementById('output').value = out;
+        return;
+      }
+
+      // Интервью
+      const intTitle = document.getElementById('int_title').value.trim();
+      const intLogline = document.getElementById('int_logline').value.trim();
+      const intPan = document.getElementById('int_panorama').value.trim();
+
+      let out = '';
+      out += `[PARSEHTML] < div class="ArticleHeader" > [/PARSEHTML]ИНТЕРВЬЮ | ${ intTitle } \n\n`;
+      if (intLogline) {
+        out += `[PARSEHTML] < div class="ArticleLogline" > [/PARSEHTML]${intLogline}[PARSEHTML]</div >\n\n`;
+      }
+      if (intPan) {
+        out += `[PARSEHTML] < div style = "text-align:center; padding:10px 0;" > <img src="${intPan}" style="width:100%; object-fit:cover; max-height:300px;"></div>[/PARSEHTML]\n\n`;
+      }
+
+      // диалоги
+      const dialogItems = document.querySelectorAll('#dialog-container .dialog-item');
+      dialogItems.forEach(item => {
+        const type = item.dataset.type || 'question';
+        const name = item.querySelector('.diag-name') ? item.querySelector('.diag-name').value.trim() : '';
+        const text = item.querySelector('.diag-text') ? item.querySelector('.diag-text').value.trim() : '';
+        if (!text) return;
+        const className = type === 'question' ? 'yp_interview_question' : 'yp_interview_answer';
+        const labelClass = type === 'question' ? 'yp_interviewer' : 'yp_interviewee';
+        out += `[PARSEHTML] < div class= "${className}" > <span class="${labelClass}">${escapeHtml(name || '')}:</span>[/PARSEHTML] ${escapeHtml(text)} [PARSEHTML]</div >\n\n`;
+      });
+
+      out += note;
+      document.getElementById('output').value = out;
+    }
+
+    // Утилита: экранирование HTML внутри текста цитат/реплик, но оставляем BB-коды как есть
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Копирование в буфер
+    function copyOutput() {
+      const out = document.getElementById('output');
+      out.select();
+      try {
+        document.execCommand('copy');
+        // краткая подсказка
+        const old = document.getElementById('copy-btn').textContent;
+        document.getElementById('copy-btn').textContent = 'Скопировано';
+        setTimeout(()=> document.getElementById('copy-btn').textContent = old, 1300);
+      } catch (e) {
+        alert('Копирование не поддерживается в этом браузере. Скопируйте вручную.');
+      }
+    }
+
+    </script>
+</body>
+
+</html>
