@@ -116,12 +116,17 @@ function generate() {
         if (info) out += `<div class="ArticleMeta">${info}</div>\n`;
         out += `<div class="ArticleHeader">${title}</div>\n`;
         if (logline) out += `<div class="ArticleLogline">${logline}</div>\n`;
-        if (img) out += `<div style="text-align: center; padding: 20px 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 200px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>\n`;
-
-        // ПЕРВЫЙ АБЗАЦ И ОСНОВНОЙ ТЕКСТ
+        
+        // Открываем текстовый блок и вставляем первый абзац
         out += `<div class="ArticleText">[/PARSEHTML]\n`;
         if (first) out += `${first}\n\n`;
+        
+        // Вставляем главную картинку после первого абзаца (внутри ArticleText, поэтому оборачиваем в PARSEHTML)
+        if (img) {
+            out += `[PARSEHTML]<div style="text-align: center; padding: 20px 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 200px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>[/PARSEHTML]\n\n`;
+        }
 
+        // Далее идут остальные блоки (текст, подзаголовки, цитаты)
         const blocks = articleContent.querySelectorAll('.content-block');
         blocks.forEach(block => {
             const type = block.dataset.type;
