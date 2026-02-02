@@ -311,7 +311,7 @@ function generate() {
         if (logline) out += `<div class="ArticleLogline">${logline}</div>\n\n`;
         
         if (img) {
-            out += `<div style="text-align: center; padding: 20px 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 300px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>\n\n`;
+            out += `<div style="text-align: center; padding: 20px 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 200px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>\n\n`;
         }
 
         out += `<div class="ArticleText">\n`;
@@ -348,7 +348,7 @@ function generate() {
 
         out += `<div class="ArticleHeader">ИНТЕРВЬЮ | ${intTitle}</div>\n\n`;
         if (intLogline) out += `<div class="ArticleLogline">${intLogline}</div>\n\n`;
-        if (intPan) out += `<div style="text-align:center; padding:10px 0;"><img src="${intPan}" style="width:100%; object-fit:cover; max-height:300px;"></div>\n\n`;
+        if (intPan) out += `<div style="text-align:center; padding:10px 0;"><img src="${intPan}" style="width:100%; object-fit:cover; max-height:200px;"></div>\n\n`;
 
         const dialogItems = document.querySelectorAll('#dialog-container .dialog-item');
         dialogItems.forEach(item => {
