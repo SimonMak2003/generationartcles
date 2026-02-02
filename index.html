@@ -215,96 +215,82 @@
     </div>
 
     <script>
-        // Переключение вкладок
-        const tabArticle = document.getElementById('tab-article');
-        const tabInterview = document.getElementById('tab-interview');
-        const articleFields = document.getElementById('article-fields');
-        const interviewFields = document.getElementById('interview-fields');
+// Переключение вкладок
+const tabArticle = document.getElementById('tab-article');
+const tabInterview = document.getElementById('tab-interview');
+const articleFields = document.getElementById('article-fields');
+const interviewFields = document.getElementById('interview-fields');
 
-        tabArticle.addEventListener('click', () => { tabArticle.classList.add('active'); tabInterview.classList.remove('active'); articleFields.style.display = 'block'; interviewFields.style.display = 'none'; });
-        tabInterview.addEventListener('click', () => { tabInterview.classList.add('active'); tabArticle.classList.remove('active'); articleFields.style.display = 'none'; interviewFields.style.display = 'block'; });
+tabArticle.addEventListener('click', () => {
+    tabArticle.classList.add('active');
+    tabInterview.classList.remove('active');
+    articleFields.style.display = 'block';
+    interviewFields.style.display = 'none';
+});
 
-        // Контейнеры
-        const articleContent = document.getElementById('article-content');
-        // Инициализация с одним текстовым блоком
-        addTextBlock();
+tabInterview.addEventListener('click', () => {
+    tabInterview.classList.add('active');
+    tabArticle.classList.remove('active');
+    articleFields.style.display = 'none';
+    interviewFields.style.display = 'block';
+});
 
-        function addTextBlock(text = '') {
-            const id = 'txt-' + Date.now() + Math.random().toString(36).slice(2, 8);
-            const wrapper = document.createElement('div');
-            wrapper.className = 'content-block';
-            wrapper.dataset.type = 'text';
-            wrapper.style.marginBottom = '10px';
-            wrapper.innerHTML = `
-        <textarea data-id="${id}" class="block-text" placeholder="Продолжение текста...">${text}</textarea>
+const articleContent = document.getElementById('article-content');
+addTextBlock(); // Начальный блок
+
+function addTextBlock(text = '') {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'content-block';
+    wrapper.dataset.type = 'text';
+    wrapper.style.marginBottom = '10px';
+    wrapper.innerHTML = `
+        <textarea class="block-text" placeholder="Продолжение текста...">${text}</textarea>
         <div style="margin-top:6px; display:flex; gap:6px;">
           <button class="delete-btn" onclick="this.closest('.content-block').remove()">Удалить блок</button>
-        </div>
-      `;
-            articleContent.appendChild(wrapper);
-            wrapper.querySelector('textarea').focus();
-        }
+        </div>`;
+    articleContent.appendChild(wrapper);
+}
 
-        function addQuoteBlock(quoteText = '', attribution = '') {
-            const id = 'q-' + Date.now() + Math.random().toString(36).slice(2, 8);
-            const wrapper = document.createElement('div');
-            wrapper.className = 'content-block';
-            wrapper.dataset.type = 'quote';
-            wrapper.style.marginBottom = '10px';
-            wrapper.innerHTML = `
+function addQuoteBlock() {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'content-block';
+    wrapper.dataset.type = 'quote';
+    wrapper.style.marginBottom = '10px';
+    wrapper.innerHTML = `
         <div style="margin-bottom:8px; font-weight:700;">Цитата</div>
-        <textarea data-id="${id}" class="quote-textarea" placeholder="Текст цитаты...">${quoteText}</textarea>
-        <input type="text" class="quote-attr" placeholder="Атрибуция (пример: [USER=332]Имя Фамилия[/USER])" value="${attribution}" style="margin-top:8px;">
+        <textarea class="quote-textarea" placeholder="Текст цитаты..."></textarea>
+        <input type="text" class="quote-attr" placeholder="Атрибуция (Имя Фамилия)" style="margin-top:8px;">
         <div style="margin-top:8px; display:flex; gap:6px;">
           <button class="delete-btn" onclick="this.closest('.content-block').remove()">Удалить цитату</button>
-          <button class="btn-add" onclick="insertTextAfter(this.closest('.content-block'))">Вставить текст после цитаты</button>
-        </div>
-      `;
-            articleContent.appendChild(wrapper);
-            wrapper.querySelector('.quote-textarea').focus();
-        }
+        </div>`;
+    articleContent.appendChild(wrapper);
+}
 
-        function insertTextAfter(node) {
-            // создаёт новый текстовый блок сразу после переданного узла
-            const textBlock = document.createElement('div');
-            textBlock.className = 'content-block';
-            textBlock.dataset.type = 'text';
-            textBlock.style.marginBottom = '10px';
-            textBlock.innerHTML = `
-        <textarea class="block-text" placeholder="Продолжение текста..."></textarea>
-        <div style="margin-top:6px; display:flex; gap:6px;">
-          <button class="delete-btn" onclick="this.closest('.content-block').remove()">Удалить блок</button>
-        </div>
-      `;
-            node.parentNode.insertBefore(textBlock, node.nextSibling);
-            textBlock.querySelector('textarea').focus();
-        }
-
-        // Диалоги для интервью
-        function addDialog(type) {
-            const container = document.getElementById('dialog-container');
-            const div = document.createElement('div');
-            div.className = 'dialog-item';
-            div.dataset.type = type;
-            div.innerHTML = `
-        <div class="row" style="align-items:flex-start;">
-          <input type="text" placeholder="Кто говорит (Имя)" class="diag-name" style="width:28%;">
+function addDialog(type) {
+    const container = document.getElementById('dialog-container');
+    const div = document.createElement('div');
+    div.className = 'dialog-item';
+    div.dataset.type = type;
+    div.innerHTML = `
+        <div class="row">
+          <input type="text" placeholder="Кто говорит" class="diag-name" style="width:28%;">
           <textarea placeholder="Текст реплики" class="diag-text" style="width:68%"></textarea>
         </div>
-        <div style="margin-top:8px;">
-          <button class="delete-btn" onclick="this.closest('.dialog-item').remove()">Удалить</button>
-        </div>
-      `;
-            container.appendChild(div);
-            div.querySelector('.diag-name').focus();
-        }
+        <button class="delete-btn" style="margin-top:8px;" onclick="this.closest('.dialog-item').remove()">Удалить</button>`;
+    container.appendChild(div);
+}
 
-        // Генерация кода
-        document.getElementById('generate-btn').addEventListener('click', generate);
-        document.getElementById('copy-btn').addEventListener('click', copyOutput);
+document.getElementById('generate-btn').addEventListener('click', generate);
+document.getElementById('copy-btn').addEventListener('click', copyOutput);
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 function generate() {
-    const note = `<div class="ArticleNote">Вы можете поддержать издание «Федералист», поставив реакцию к статье, присоединившись к её обсуждению или отправив донат игровой валюты (или золота) автору статьи.</div>`;
+    const note = `[PARSEHTML]<div class="ArticleNote">Вы можете поддержать издание «Федералист»...</div>[/PARSEHTML]`;
+    let out = '';
 
     if (articleFields.style.display !== 'none') {
         const info = document.getElementById('art_info').value.trim();
@@ -315,180 +301,61 @@ function generate() {
         const author = document.getElementById('art_author').value.trim();
         const authorImg = document.getElementById('art_author_img').value.trim();
 
-        let out = '';
+        if (info) out += `[PARSEHTML]<div class="ArticleMeta">${info}</div>[/PARSEHTML]\n`;
+        out += `[PARSEHTML]<div class="ArticleHeader">${title}</div>[/PARSEHTML]\n\n`;
+        if (logline) out += `[PARSEHTML]<div class="ArticleLogline">${logline}</div>[/PARSEHTML]\n\n`;
+        if (img) out += `[PARSEHTML]<div style="text-align: center; padding: 20px 0;"><img src="${img}" style="width: 100%; max-height: 300px; object-fit: cover;"></div>[/PARSEHTML]\n\n`;
 
-        // Блок "Инфо" (Дата | Категория) - теперь отдельный див
-        if (info) {
-            out += `<div class="ArticleMeta">${info}</div>\n`;
-        }
-        
-        // Заголовок статьи
-        out += `<div class="ArticleHeader">${title}</div>\n\n`;
-        
-        // Логлайн
-        if (logline) {
-            out += `<div class="ArticleLogline">${logline}</div>\n\n`;
-        }
-
-        // Картинка
-        if (img) {
-            out += `<div style="text-align: center; padding: 20px 0 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 300px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>\n\n`;
-        }
-
-        // Начало основного текста
-        out += `<div class="ArticleText">\n`;
-        
-        if (first) {
-            out += `<p>${first.replace(/\n/g, '<br>')}</p>\n\n`;
-        }
+        out += `[PARSEHTML]<div class="ArticleText">[/PARSEHTML]\n`;
+        if (first) out += `[PARSEHTML]<p>${first.replace(/\n/g, '<br>')}</p>[/PARSEHTML]\n\n`;
 
         const blocks = articleContent.querySelectorAll('.content-block');
         blocks.forEach(block => {
             if (block.dataset.type === 'text') {
                 const t = block.querySelector('textarea').value.trim();
-                if (t) out += `<p>${t.replace(/\n/g, '<br>')}</p>\n\n`;
+                if (t) out += `[PARSEHTML]<p>${t.replace(/\n/g, '<br>')}</p>[/PARSEHTML]\n\n`;
             } else if (block.dataset.type === 'quote') {
                 const q = block.querySelector('.quote-textarea').value.trim();
                 const attr = block.querySelector('.quote-attr').value.trim();
-                if (q) {
-                    out += `<div class="quote-container"><div class="quote-text">${escapeHtml(q)}</div><div class="quote-attribution">${attr}</div></div>\n\n`;
-                }
+                out += `[PARSEHTML]<div class="quote-container"><div class="quote-text">${escapeHtml(q)}</div><div class="quote-attribution">${attr}</div></div>[/PARSEHTML]\n\n`;
             }
         });
+        out += `[PARSEHTML]</div>[/PARSEHTML]\n\n`;
+        out += `[PARSEHTML]<div class="AuthorColumn" style="background-color: #f5f5f5;"><div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}"><p class="AuthorName">${author}</p></div><p class="AuthorDesc">Автор статьи</p></div></div>[/PARSEHTML]\n\n`;
+        
+    } else {
+        // Режим интервью
+        const intTitle = document.getElementById('int_title').value.trim();
+        const intLogline = document.getElementById('int_logline').value.trim();
+        const intPan = document.getElementById('int_panorama').value.trim();
 
-        out += `</div>\n\n`;
+        out += `[PARSEHTML]<div class="ArticleHeader">ИНТЕРВЬЮ | ${intTitle}</div>[/PARSEHTML]\n\n`;
+        if (intLogline) out += `[PARSEHTML]<div class="ArticleLogline">${intLogline}</div>[/PARSEHTML]\n\n`;
+        if (intPan) out += `[PARSEHTML]<div style="text-align:center; padding:10px 0;"><img src="${intPan}" style="width:100%; max-height:300px; object-fit:cover;"></div>[/PARSEHTML]\n\n`;
 
-        // Автор
-        out += `<div class="AuthorColumn" style="background-color: #f5f5f5; --color: #006aa7">
-<div class="AuthorInfo">
-    <div class="AuthorProfile">
-        <img class="AuthorPfp" src="${authorImg}">
-        <p class="AuthorName">${author}</p>
-    </div>
-    <p class="AuthorDesc">Автор статьи</p>
-</div>
-</div>\n\n`;
-
-        out += note;
-        document.getElementById('output').value = out;
-        return;
+        const dialogItems = document.querySelectorAll('#dialog-container .dialog-item');
+        dialogItems.forEach(item => {
+            const name = item.querySelector('.diag-name').value.trim();
+            const text = item.querySelector('.diag-text').value.trim();
+            const className = item.dataset.type === 'question' ? 'yp_interview_question' : 'yp_interview_answer';
+            const labelClass = item.dataset.type === 'question' ? 'yp_interviewer' : 'yp_interviewee';
+            if (text) out += `[PARSEHTML]<div class="${className}"><span class="${labelClass}">${escapeHtml(name)}:</span> ${escapeHtml(text)}</div>[/PARSEHTML]\n\n`;
+        });
     }
 
-    // Режим Интервью
-    const intTitle = document.getElementById('int_title').value.trim();
-    const intLogline = document.getElementById('int_logline').value.trim();
-    const intPan = document.getElementById('int_panorama').value.trim();
-
-    let out = `<div class="ArticleHeader">ИНТЕРВЬЮ | ${intTitle}</div>\n\n`;
-    if (intLogline) out += `<div class="ArticleLogline">${intLogline}</div>\n\n`;
-    if (intPan) out += `<div style="text-align:center; padding:10px 0;"><img src="${intPan}" style="width:100%; object-fit:cover; max-height:300px;"></div>\n\n`;
-
-    const dialogItems = document.querySelectorAll('#dialog-container .dialog-item');
-    dialogItems.forEach(item => {
-        const type = item.dataset.type;
-        const name = item.querySelector('.diag-name').value.trim();
-        const text = item.querySelector('.diag-text').value.trim();
-        if (text) {
-            const className = type === 'question' ? 'yp_interview_question' : 'yp_interview_answer';
-            const labelClass = type === 'question' ? 'yp_interviewer' : 'yp_interviewee';
-            out += `<div class="${className}"><span class="${labelClass}">${escapeHtml(name)}:</span> ${escapeHtml(text)}</div>\n\n`;
-        }
-    });
-    out += note;
-    document.getElementById('output').value = out;
-}
-<div class="AuthorInfo">
-    <div class="AuthorProfile">
-        <img class="AuthorPfp" src="${authorImg}">
-        <p class="AuthorName">${author}</p>
-    </div>
-    <p class="AuthorDesc">Автор статьи</p>
-</div>
-</div>\n\n`;
-
-        out += note;
-        document.getElementById('output').value = out;
-        return;
-    }
-
-    // Логика интервью
-    const intTitle = document.getElementById('int_title').value.trim();
-    const intLogline = document.getElementById('int_logline').value.trim();
-    const intPan = document.getElementById('int_panorama').value.trim();
-
-    let out = `<div class="ArticleHeader">ИНТЕРВЬЮ | ${intTitle}</div>\n\n`;
-    if (intLogline) out += `<div class="ArticleLogline">${intLogline}</div>\n\n`;
-    if (intPan) out += `<div style="text-align:center; padding:10px 0;"><img src="${intPan}" style="width:100%; object-fit:cover; max-height:300px;"></div>\n\n`;
-
-    const dialogItems = document.querySelectorAll('#dialog-container .dialog-item');
-    dialogItems.forEach(item => {
-        const type = item.dataset.type;
-        const name = item.querySelector('.diag-name').value.trim();
-        const text = item.querySelector('.diag-text').value.trim();
-        if (text) {
-            const className = type === 'question' ? 'yp_interview_question' : 'yp_interview_answer';
-            const labelClass = type === 'question' ? 'yp_interviewer' : 'yp_interviewee';
-            out += `<div class="${className}"><span class="${labelClass}">${escapeHtml(name)}:</span> ${escapeHtml(text)}</div>\n\n`;
-        }
-    });
     out += note;
     document.getElementById('output').value = out;
 }
 
-      // Интервью
-      const intTitle = document.getElementById('int_title').value.trim();
-      const intLogline = document.getElementById('int_logline').value.trim();
-      const intPan = document.getElementById('int_panorama').value.trim();
-
-      let out = '';
-      out += `[PARSEHTML] < div class="ArticleHeader" > [/PARSEHTML]ИНТЕРВЬЮ | ${ intTitle } \n\n`;
-      if (intLogline) {
-        out += `[PARSEHTML] < div class="ArticleLogline" > [/PARSEHTML]${intLogline}[PARSEHTML]</div >\n\n`;
-      }
-      if (intPan) {
-        out += `[PARSEHTML] < div style = "text-align:center; padding:10px 0;" > <img src="${intPan}" style="width:100%; object-fit:cover; max-height:300px;"></div>[/PARSEHTML]\n\n`;
-      }
-
-      // диалоги
-      const dialogItems = document.querySelectorAll('#dialog-container .dialog-item');
-      dialogItems.forEach(item => {
-        const type = item.dataset.type || 'question';
-        const name = item.querySelector('.diag-name') ? item.querySelector('.diag-name').value.trim() : '';
-        const text = item.querySelector('.diag-text') ? item.querySelector('.diag-text').value.trim() : '';
-        if (!text) return;
-        const className = type === 'question' ? 'yp_interview_question' : 'yp_interview_answer';
-        const labelClass = type === 'question' ? 'yp_interviewer' : 'yp_interviewee';
-        out += `[PARSEHTML] < div class= "${className}" > <span class="${labelClass}">${escapeHtml(name || '')}:</span>[/PARSEHTML] ${escapeHtml(text)} [PARSEHTML]</div >\n\n`;
-      });
-
-      out += note;
-      document.getElementById('output').value = out;
-
-    // Утилита: экранирование HTML внутри текста цитат/реплик, но оставляем BB-коды как есть
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    // Копирование в буфер
-    function copyOutput() {
-      const out = document.getElementById('output');
-      out.select();
-      try {
-        document.execCommand('copy');
-        // краткая подсказка
-        const old = document.getElementById('copy-btn').textContent;
-        document.getElementById('copy-btn').textContent = 'Скопировано';
-        setTimeout(()=> document.getElementById('copy-btn').textContent = old, 1300);
-      } catch (e) {
-        alert('Копирование не поддерживается в этом браузере. Скопируйте вручную.');
-      }
-    }
-
+function copyOutput() {
+    const out = document.getElementById('output');
+    out.select();
+    document.execCommand('copy');
+    const btn = document.getElementById('copy-btn');
+    const old = btn.textContent;
+    btn.textContent = 'Скопировано';
+    setTimeout(() => btn.textContent = old, 1300);
+}
     </script>
 </body>
 
