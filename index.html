@@ -304,60 +304,98 @@
         document.getElementById('copy-btn').addEventListener('click', copyOutput);
 
         function generate() {
-            const note = `[PARSEHTML]<div class="ArticleNote">Вы можете поддержать издание «Федералист», поставив реакцию к статье, присоединившись к её обсуждению или отправив донат игровой валюты (или золота) автору статьи.</div>[/PARSEHTML]`;
+    const note = `<div class="ArticleNote">Вы можете поддержать издание «Федералист», поставив реакцию к статье, присоединившись к её обсуждению или отправив донат игровой валюты (или золота) автору статьи.</div>`;
 
-            if (articleFields.style.display !== 'none') {
-                const info = document.getElementById('art_info').value.trim();
-                const title = document.getElementById('art_title').value.trim();
-                const logline = document.getElementById('art_logline').value.trim();
-                const first = document.getElementById('art_first').value.trim();
-                const img = document.getElementById('art_img').value.trim();
-                const author = document.getElementById('art_author').value.trim();
-                const authorImg = document.getElementById('art_author_img').value.trim();
+    if (articleFields.style.display !== 'none') {
+        const info = document.getElementById('art_info').value.trim();
+        const title = document.getElementById('art_title').value.trim();
+        const logline = document.getElementById('art_logline').value.trim();
+        const first = document.getElementById('art_first').value.trim();
+        const img = document.getElementById('art_img').value.trim();
+        const author = document.getElementById('art_author').value.trim();
+        const authorImg = document.getElementById('art_author_img').value.trim();
 
-                let out = '';
+        let out = '';
 
-                // Заголовок
-                out += `[PARSEHTML]<div class="ArticleHeader">[/PARSEHTML]${info}\n\n${title}[PARSEHTML]</div>[/PARSEHTML]\n\n`;
+        // Заголовок
+        out += `<div class="ArticleHeader">${info}<br><br>${title}</div>\n\n`;
+        
+        // Логлайн
+        if (logline) {
+            out += `<div class="ArticleLogline">${logline}</div>\n\n`;
+        }
 
-                // Логлайн
-                if (logline) {
-                    out += `[PARSEHTML]<div class="ArticleLogline">[/PARSEHTML]${logline}[PARSEHTML]</div>[/PARSEHTML]\n\n`;
+        // Картинка
+        if (img) {
+            out += `<div style="text-align: center; padding: 20px 0 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 300px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>\n\n`;
+        }
+
+        // Начало блока текста (Lora)
+        out += `<div class="ArticleText">\n`;
+        
+        if (first) {
+            out += `<p>${first.replace(/\n/g, '<br>')}</p>\n\n`;
+        }
+
+        // Проходим по всем блокам контента
+        const blocks = articleContent.querySelectorAll('.content-block');
+        blocks.forEach(block => {
+            if (block.dataset.type === 'text') {
+                const t = block.querySelector('textarea').value.trim();
+                if (t) {
+                    out += `<p>${t.replace(/\n/g, '<br>')}</p>\n\n`;
                 }
-
-                // Картинка
-                if (img) {
-                    out += `[PARSEHTML]<div style="text-align: center; padding: 20px 0 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 300px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>[/PARSEHTML]\n\n`;
+            } else if (block.dataset.type === 'quote') {
+                const q = block.querySelector('.quote-textarea').value.trim();
+                const attr = block.querySelector('.quote-attr').value.trim();
+                if (q) {
+                    out += `<div class="quote-container"><div class="quote-text">${escapeHtml(q)}</div><div class="quote-attribution">${attr}</div></div>\n\n`;
                 }
+            }
+        });
 
-                // Начало блока текста (Lora)
-                out += `[PARSEHTML]<div class="ArticleText">[/PARSEHTML]`;
+        // Закрываем ArticleText
+        out += `</div>\n\n`;
 
-                if (first) {
-                    out += `${first}\n\n`;
-                }
+        // Автор
+        out += `<div class="AuthorColumn" style="background-color: #f5f5f5; --color: #006aa7">
+<div class="AuthorInfo">
+    <div class="AuthorProfile">
+        <img class="AuthorPfp" src="${authorImg}">
+        <p class="AuthorName">${author}</p>
+    </div>
+    <p class="AuthorDesc">Автор статьи</p>
+</div>
+</div>\n\n`;
 
-                // Проходим по всем блокам контента
-                const blocks = articleContent.querySelectorAll('.content-block');
-                blocks.forEach(block => {
-                    if (block.dataset.type === 'text') {
-                        const t = block.querySelector('textarea').value.trim();
-                        if (t) out += `${t}\n\n`;
-                    } else if (block.dataset.type === 'quote') {
-                        const q = block.querySelector('.quote-textarea').value.trim();
-                        const attr = block.querySelector('.quote-attr').value.trim();
-                        if (q) {
-                            // Цитата должна быть внутри PARSEHTML, но мы не закрываем ArticleText
-                            out += `[PARSEHTML]<div class="quote-container"><div class="quote-text">${escapeHtml(q)}</div><div class="quote-attribution">${attr}</div></div>[/PARSEHTML]\n\n`;
-                        }
-                    }
-                });
+        out += note;
+        document.getElementById('output').value = out;
+        return;
+    }
 
-                // ВАЖНО: Закрываем ArticleText только ЗДЕСЬ, в самом конце основного контента
-                out += `[PARSEHTML]</div>[/PARSEHTML]\n\n`;
+    // Логика интервью
+    const intTitle = document.getElementById('int_title').value.trim();
+    const intLogline = document.getElementById('int_logline').value.trim();
+    const intPan = document.getElementById('int_panorama').value.trim();
 
-                // Автор
-                out += `[PARSEHTML]<div class="AuthorColumn" style="background-color: #f5f5f5; --color: #006aa7">
+    let out = `<div class="ArticleHeader">ИНТЕРВЬЮ | ${intTitle}</div>\n\n`;
+    if (intLogline) out += `<div class="ArticleLogline">${intLogline}</div>\n\n`;
+    if (intPan) out += `<div style="text-align:center; padding:10px 0;"><img src="${intPan}" style="width:100%; object-fit:cover; max-height:300px;"></div>\n\n`;
+
+    const dialogItems = document.querySelectorAll('#dialog-container .dialog-item');
+    dialogItems.forEach(item => {
+        const type = item.dataset.type;
+        const name = item.querySelector('.diag-name').value.trim();
+        const text = item.querySelector('.diag-text').value.trim();
+        if (text) {
+            const className = type === 'question' ? 'yp_interview_question' : 'yp_interview_answer';
+            const labelClass = type === 'question' ? 'yp_interviewer' : 'yp_interviewee';
+            out += `<div class="${className}"><span class="${labelClass}">${escapeHtml(name)}:</span> ${escapeHtml(text)}</div>\n\n`;
+        }
+    });
+    out += note;
+    document.getElementById('output').value = out;
+}
 <div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}">
 <p class="AuthorName">[/PARSEHTML]${author}[PARSEHTML]</p></div>
 <p class="AuthorDesc">Автор статьи</p></div></div>[/PARSEHTML]\n\n`;
