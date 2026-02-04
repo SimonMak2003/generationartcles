@@ -117,38 +117,50 @@ function generate() {
         out += `<div class="ArticleHeader">${title}</div>\n`;
         if (logline) out += `<div class="ArticleLogline">${logline}</div>\n`;
         
-        // Открываем текстовый блок и вставляем первый абзац
-        out += `<div class="ArticleText">[/PARSEHTML]\n`;
-        if (first) out += `${first}\n\n`;
+        // Вводный текст (первый абзац) в отдельном блоке
+        if (first) {
+            out += `<div class="ArticleText">[/PARSEHTML]\n${first}\n[PARSEHTML]</div>\n`;
+        }
         
-        // Вставляем главную картинку после первого абзаца (внутри ArticleText, поэтому оборачиваем в PARSEHTML)
+        // Главная картинка
         if (img) {
-            out += `[PARSEHTML]<div style="text-align: center; padding: 20px 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 200px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>[/PARSEHTML]\n\n`;
+            out += `<div style="text-align: center; padding: 20px 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 200px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>\n`;
         }
 
-        // Далее идут остальные блоки (текст, подзаголовки, цитаты)
+        // Обработка динамических блоков
         const blocks = articleContent.querySelectorAll('.content-block');
         blocks.forEach(block => {
             const type = block.dataset.type;
             const val = block.querySelector('.blk-val').value.trim();
 
-            if (type === 'text' && val) {
-                out += `${val}\n\n`;
+            if (!val && type !== 'panorama') return; // Пропуск пустых блоков
+
+            if (type === 'text') {
+                out += `<div class="ArticleText">[/PARSEHTML]\n${val}\n[PARSEHTML]</div>\n`;
             } 
-            else if (type === 'subheader' && val) {
-                out += `[PARSEHTML]<div class="ArticleSubheader">${val}</div>[/PARSEHTML]\n\n`;
+            else if (type === 'subheader') {
+                out += `<div class="ArticleSubheader">${val}</div>\n`;
             }
-            else if (type === 'panorama' && val) {
-                out += `[PARSEHTML]<img src="${val}" class="ArticleInnerPanorama">[/PARSEHTML]\n\n`;
+            else if (type === 'panorama') {
+                out += `<img src="${val}" class="ArticleInnerPanorama">\n`;
             }
-            else if (type === 'quote' && val) {
+            else if (type === 'quote') {
                 const attr = block.querySelector('.blk-attr').value.trim();
-                out += `[PARSEHTML]<div class="quote-container"><div class="quote-text">[/PARSEHTML]${val}[PARSEHTML]</div><div class="quote-attribution">${attr}</div></div>[/PARSEHTML]\n\n`;
+                out += `<div class="quote-container"><div class="quote-text">[/PARSEHTML]${val}[PARSEHTML]</div><div class="quote-attribution">${attr}</div></div>\n`;
             }
         });
 
-        out += `[PARSEHTML]</div>\n\n`;
+        // Блок автора
+        out += `<div class="AuthorColumn" style="background-color: #f5f5f5; --color: #006aa7; margin-top: 20px;">
+<div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}"><p class="AuthorName">${author}</p></div><p class="AuthorDesc">Автор статьи</p></div></div>\n`;
 
+    } else {
+        out += `<div class="ArticleHeader">ИНТЕРВЬЮ</div>\n`;
+    }
+
+    out += note + "[/PARSEHTML]";
+    document.getElementById('output').value = out;
+}
         // АВТОР
         out += `<div class="AuthorColumn" style="background-color: #f5f5f5; --color: #006aa7">
 <div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}"><p class="AuthorName">${author}</p></div><p class="AuthorDesc">Автор статьи</p></div></div>\n`;
