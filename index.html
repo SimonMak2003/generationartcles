@@ -117,23 +117,20 @@ function generate() {
         out += `<div class="ArticleHeader">${title}</div>\n`;
         if (logline) out += `<div class="ArticleLogline">${logline}</div>\n`;
         
-        // Вводный текст (первый абзац) в отдельном блоке
         if (first) {
             out += `<div class="ArticleText">[/PARSEHTML]\n${first}\n[PARSEHTML]</div>\n`;
         }
         
-        // Главная картинка
         if (img) {
             out += `<div style="text-align: center; padding: 20px 0;"><img src="${img}" style="width: 100%; object-fit: cover; max-height: 200px; box-shadow: 0 3px 6px rgba(0,0,0,0.16);"></div>\n`;
         }
 
-        // Обработка динамических блоков
         const blocks = articleContent.querySelectorAll('.content-block');
         blocks.forEach(block => {
             const type = block.dataset.type;
             const val = block.querySelector('.blk-val').value.trim();
 
-            if (!val && type !== 'panorama') return; // Пропуск пустых блоков
+            if (!val && type !== 'panorama') return;
 
             if (type === 'text') {
                 out += `<div class="ArticleText">[/PARSEHTML]\n${val}\n[PARSEHTML]</div>\n`;
@@ -146,13 +143,14 @@ function generate() {
             }
             else if (type === 'quote') {
                 const attr = block.querySelector('.blk-attr').value.trim();
-                out += `<div class="quote-container"><div class="quote-text">[/PARSEHTML]${val}[PARSEHTML]</div><div class="quote-attribution">${attr}</div></div>\n`;
+                // Логика: Текст цитаты в BB-режиме, Атрибуция в BB-режиме
+                out += `<div class="quote-container"><div class="quote-text">[/PARSEHTML]${val}[PARSEHTML]</div><div class="quote-attribution">[/PARSEHTML]${attr}[PARSEHTML]</div></div>\n`;
             }
         });
 
-        // Блок автора
+        // Блок автора: Имя автора теперь тоже позволяет использовать BB-коды (например, [USER])
         out += `<div class="AuthorColumn" style="background-color: #f5f5f5; --color: #006aa7; margin-top: 20px;">
-<div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}"><p class="AuthorName">${author}</p></div><p class="AuthorDesc">Автор статьи</p></div></div>\n`;
+<div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}"><p class="AuthorName">[/PARSEHTML]${author}[PARSEHTML]</p></div><p class="AuthorDesc">Автор статьи</p></div></div>\n`;
 
     } else {
         out += `<div class="ArticleHeader">ИНТЕРВЬЮ</div>\n`;
