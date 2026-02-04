@@ -144,13 +144,13 @@ function generate() {
             else if (type === 'quote') {
                 const attr = block.querySelector('.blk-attr').value.trim();
                 // Логика: Текст цитаты в BB-режиме, Атрибуция в BB-режиме
-                out += `<div class="quote-container"><div class="quote-text">[/PARSEHTML]${val}[PARSEHTML]</div><div class="quote-attribution">[/PARSEHTML]${attr}[PARSEHTML]</div></div>\n`;
+                out += `<div class="quote-container"><div class="quote-text">[/PARSEHTML]${val}[PARSEHTML]</div><div class="quote-attribution">[/PARSEHTML] ${attr} [PARSEHTML]</div></div>\n`;
             }
         });
 
         // Блок автора: Имя автора теперь тоже позволяет использовать BB-коды (например, [USER])
         out += `<div class="AuthorColumn" style="background-color: #f5f5f5; --color: #006aa7; margin-top: 20px;">
-<div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}"><p class="AuthorName">[/PARSEHTML]${author}[PARSEHTML]</p></div><p class="AuthorDesc">Автор статьи</p></div></div>\n`;
+<div class="AuthorInfo"><div class="AuthorProfile"><img class="AuthorPfp" src="${authorImg}"><p class="AuthorName">[/PARSEHTML] ${author} [PARSEHTML]</p></div><p class="AuthorDesc">Автор статьи</p></div></div>\n`;
 
     } else {
         out += `<div class="ArticleHeader">ИНТЕРВЬЮ</div>\n`;
